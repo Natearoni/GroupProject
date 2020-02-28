@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">GroupProject</string>
+    <string name="title">"TaskTracker"</string>
+    <!-- Strings related to login -->
+    <string name="prompt_username">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Login</string>
+    <string name="action_log_out">Logout</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_create_user">create_user</string>
+    <string name="create_user">Create User</string>
+
+    <!-- Strings related to general labeling-->
+    <string name="action_add_task">Add Task</string>
+    <string name="action_remove_task">Del</string>
+    <string name="action_modify_task">Mod</string>
+    <string name="action_complete_task">Complete</string>
+    <string name="prompt_task_description">Task Description</string>
+    <string name="prompt_task_location">Location</string>
+    <string name="action_confirm">Confirm</string>
+</resources>
