@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 //Database Manager
 public class DBM extends SQLiteOpenHelper
 {
-    private static final String DB_NAME = "TaskDB";
+    private static final String DB_NAME = "TaskDB"; //database name
     private static final int DB_VERS = 1;
     private static final String TAG = "DBM";
 
@@ -84,7 +84,7 @@ public class DBM extends SQLiteOpenHelper
                 "UNIQUE(user_name) )";
         queries[3] = createQuery;
 
-        //user_tasks table
+        //user_tasks bridge table
         createQuery = "CREATE TABLE " + TABLE_NAMES[2] + "(" +
                 "user_id" + " Integer not null, " +
                 "task_id" + " Integer not null, " +
@@ -96,7 +96,7 @@ public class DBM extends SQLiteOpenHelper
         for(int i = 0; i < queries.length; i++)
             sqLiteDatabase.execSQL(queries[i]);
 
-        Log.d(TAG, "OnCreate:: Successfully created the database and its tables.");
+        //Log.d(TAG, "OnCreate:: Successfully created the database and its tables.");
     }
 
     //drop and recreate the DB's tables.
@@ -105,13 +105,13 @@ public class DBM extends SQLiteOpenHelper
     {
         for(int j = 0; j < TABLE_NAMES.length; j++) //drop DB's tables.
         {
-            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAMES[i]);
-            Log.d(TAG, "OnUpgrade:: Dropping Table: " + TABLE_NAMES[i]);
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAMES[j]);
+            Log.d(TAG, "OnUpgrade:: Dropping Table: " + TABLE_NAMES[j]);
         }
         onCreate(sqLiteDatabase); //recreate DB's tables.
     }
 
-    //Will only ever return 1 user since usernames are unique.
+    //Will only ever return 1 user since usernames are unique. (or null)
     public User selectUser(String user_name) //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -125,10 +125,12 @@ public class DBM extends SQLiteOpenHelper
             cur.moveToFirst();
         else return null;
         User user = new User(cur.getString(0), cur.getString(1), cur.getInt(1));
-        user.setID(cur.getInt(0)); //0 should be id, 1 should be privilege?
+        user.setID(cur.getInt(0)); //0 should be id, 1 should be privilege.
         return user;
     }
 
+    //Tasks must be defined this way because there is another defintion for Tasks. Probably for multi-threaded java apps.
+    //Task names are also unique therefore only 1 task will be returned. (or null)
     public com.repella.groupproject.data.Task selectTask(String task_name) throws Exception //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -142,6 +144,7 @@ public class DBM extends SQLiteOpenHelper
             cur.moveToFirst();
         else return null;
         com.repella.groupproject.data.Task task = new com.repella.groupproject.data.Task(cur.getString(0), cur.getInt(1), cur.getInt(2));
+        task.setId(cur.getInt(0)); //0 should be the id.
         return task;
     }
 
@@ -155,7 +158,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("priv_id", user.getPriv_id());
         db.insert(TABLE_NAMES[0], null, cv);
         db.close();
-        Log.d(TAG, "insert::(user) Insert successful.");
+        //Log.d(TAG, "insert::(user) Insert successful.");
     }
 
     //Insert a task for a given user by username.
@@ -175,7 +178,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("user_id", assigned.getId());
         cv.put("task_id", task.getId());
         db.close();
-        Log.d(TAG, "insert::(task) Insert successful.");
+        //Log.d(TAG, "insert::(task) Insert successful.");
     }
 
     public void insert(Location loc) //Untested
@@ -187,7 +190,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("radius", loc.getRadius());
         db.insert(TABLE_NAMES[4], null, cv);
         db.close();
-        Log.d(TAG, "insert::(location) Insert successful.");
+        //Log.d(TAG, "insert::(location) Insert successful.");
     }
 
     public void insert(Privilege priv) //Tested
@@ -198,7 +201,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("description", priv.getDescription());
         db.insert(TABLE_NAMES[1], null, cv);
         db.close();
-        Log.d(TAG, "insert::(privilege) Insert successful.");
+        //Log.d(TAG, "insert::(privilege) Insert successful.");
     }
 
     //Update functions
@@ -238,8 +241,7 @@ public class DBM extends SQLiteOpenHelper
         db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{user.getUser_name()});
         db.close();
     }
-
-    public void delete(String username){ delete(selectUser(username)); }
+    public void delete(String username){ delete(selectUser(username)); } //Potential bug here. Make sure to switch to figure out what type it is.
 
     public void delete(Task task)
     {
