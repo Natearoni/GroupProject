@@ -3,9 +3,10 @@ package com.repella.groupproject.data;
 public class User
 {
     //ID is auto incremented.
-    public String user_name;
-    public String password; //must be hashed ideally.
-    public int priv_id;
+    private int id = -1; //only set during a select statement.
+    private String user_name;
+    private String password; //must be hashed ideally.
+    private int priv_id;
 
     public User(String user_name, String password, int priv_id)
     {
@@ -32,5 +33,16 @@ public class User
     public String getPassword() //already hashed in constructor.
     {
         return password;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setID(int id)
+    {
+        if(id == -1)
+            this.id = id;
     }
 }

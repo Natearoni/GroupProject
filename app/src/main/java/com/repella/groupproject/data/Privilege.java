@@ -2,8 +2,8 @@ package com.repella.groupproject.data;
 
 public class Privilege
 {
-    public String priv_name;
-    public String description;
+    private String priv_name;
+    private String description;
 
     public Privilege(String priv_name, String description)
     {

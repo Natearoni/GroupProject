@@ -2,9 +2,9 @@ package com.repella.groupproject.data;
 
 public class Location
 {
-    public double latitude;
-    public double longitude;
-    public double radius;
+    private double latitude;
+    private double longitude;
+    private double radius; //in meters.
 
     public Location(double lat, double lon, double rad)
     {

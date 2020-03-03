@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.repella.groupproject.data.*;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -78,7 +80,8 @@ public class DBM extends SQLiteOpenHelper
                 "complete" + " Integer, " +
                 "location_id" + " Integer, " +
                 "FOREIGN KEY(location_id) REFERENCES " + TABLE_NAMES[4] + "(location_id) " +
-                "CHECK(complete == 0 OR complete == 1) )";
+                "CHECK(complete == 0 OR complete == 1), " +
+                "UNIQUE(user_name) )";
         queries[3] = createQuery;
 
         //user_tasks table
@@ -108,11 +111,12 @@ public class DBM extends SQLiteOpenHelper
         onCreate(sqLiteDatabase); //recreate DB's tables.
     }
 
-    public User selectUser(String user_name)
+    //Will only ever return 1 user since usernames are unique.
+    public User selectUser(String user_name) //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.query(TABLE_NAMES[0],
-                new String[]{"user_name", "password", "priv_id"},
+                new String[]{"user_id", "user_name", "password", "priv_id"},
                 "user_name = ?",
                 new String[]{String.valueOf(user_name)},
                 null, null, null, null);
@@ -120,8 +124,25 @@ public class DBM extends SQLiteOpenHelper
         if(cur != null)
             cur.moveToFirst();
         else return null;
+        User user = new User(cur.getString(0), cur.getString(1), cur.getInt(1));
+        user.setID(cur.getInt(0)); //0 should be id, 1 should be privilege?
+        return user;
+    }
 
-        return new User(cur.getString(0), cur.getString(1), cur.getInt(0));
+    public com.repella.groupproject.data.Task selectTask(String task_name) throws Exception //Untested
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.query(TABLE_NAMES[3],
+                new String[]{"task_id", "task_name", "complete", "location_id"},
+                "task_name = ?",
+                new String[]{String.valueOf(task_name)},
+                null, null, null, null);
+
+        if(cur != null)
+            cur.moveToFirst();
+        else return null;
+        com.repella.groupproject.data.Task task = new com.repella.groupproject.data.Task(cur.getString(0), cur.getInt(1), cur.getInt(2));
+        return task;
     }
 
     //Insert functions
@@ -133,11 +154,12 @@ public class DBM extends SQLiteOpenHelper
         cv.put("password", user.getPassword());
         cv.put("priv_id", user.getPriv_id());
         db.insert(TABLE_NAMES[0], null, cv);
+        db.close();
         Log.d(TAG, "insert::(user) Insert successful.");
     }
 
-    //TODO: Requires entry into the User_Tasks table.
-    /*public void insert(com.repella.groupproject.data.Task task, String username) //Untested
+    //Insert a task for a given user by username.
+    public void insert(com.repella.groupproject.data.Task task, String username) throws Exception //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -145,9 +167,16 @@ public class DBM extends SQLiteOpenHelper
         cv.put("complete", task.getComplete());
         cv.put("location_id", task.getLocation_id());
         db.insert(TABLE_NAMES[3], null, cv);
-        Log.d(TAG, "insert::(task) Insert successful.");
+        task = selectTask(task.getTask_name()); //select same task so we get an ID
 
-    }*/
+        //assign task to user.
+        User assigned = selectUser(username);
+        cv = new ContentValues();
+        cv.put("user_id", assigned.getId());
+        cv.put("task_id", task.getId());
+        db.close();
+        Log.d(TAG, "insert::(task) Insert successful.");
+    }
 
     public void insert(Location loc) //Untested
     {
@@ -157,8 +186,8 @@ public class DBM extends SQLiteOpenHelper
         cv.put("longitude", loc.getLongitude());
         cv.put("radius", loc.getRadius());
         db.insert(TABLE_NAMES[4], null, cv);
+        db.close();
         Log.d(TAG, "insert::(location) Insert successful.");
-
     }
 
     public void insert(Privilege priv) //Tested
@@ -168,15 +197,24 @@ public class DBM extends SQLiteOpenHelper
         cv.put("priv_name", priv.getPriv_name());
         cv.put("description", priv.getDescription());
         db.insert(TABLE_NAMES[1], null, cv);
+        db.close();
         Log.d(TAG, "insert::(privilege) Insert successful.");
-
     }
 
     //Update functions
-    public void update(User user)
+    public void update(User uOld, User uNew) //Untested
     {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        //new values
+        cv.put("user_name", uNew.getUser_name());
+        cv.put("password", uNew.getPassword());
+        cv.put("priv_id", uNew.getPriv_id());
 
+        db.update(TABLE_NAMES[0], cv, "user_id = ?", new String[]{""+uOld.getId()});
+        db.close();
     }
+    public void update(String username, User uNew){ update(selectUser(username), uNew); }
 
     public void update(Task task)
     {
@@ -194,10 +232,14 @@ public class DBM extends SQLiteOpenHelper
     }
 
     //Delete functions
-    public void delete(User user)
+    public void delete(User user) //Untested
     {
-
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{user.getUser_name()});
+        db.close();
     }
+
+    public void delete(String username){ delete(selectUser(username)); }
 
     public void delete(Task task)
     {
@@ -212,6 +254,19 @@ public class DBM extends SQLiteOpenHelper
     public void delete(Privilege priv)
     {
 
+    }
+
+    //returns # of records from a given table index. Index must fit into TABLE_NAMES above.
+    public int getRecordCount(int tableIndex) //Untested
+    {
+        if(!(tableIndex < TABLE_NAMES.length))
+        {
+            String count = "SELECT * FROM " + TABLE_NAMES[tableIndex];
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cur = db.rawQuery(count, null);
+            return cur.getCount();
+        }
+        else return -1;
     }
 
     //Purges entire database's records.

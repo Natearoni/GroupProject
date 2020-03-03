@@ -2,8 +2,9 @@ package com.repella.groupproject.data;
 
 public class Task
 {
+    private int id = -1; //only set during a select statement.
     private String task_name;
-    private int complete;
+    private int complete = 0;
     private int location_id;
 
     //Throws a fit when complete is not 1 or 0.
@@ -21,6 +22,12 @@ public class Task
         return complete;
     }
 
+    public void setComplete(int complete)
+    {
+        if(complete == 1 || complete == 0)
+            this.complete = complete;
+    }
+
     public int getLocation_id()
     {
         return location_id;
@@ -29,5 +36,16 @@ public class Task
     public String getTask_name()
     {
         return task_name;
+    }
+
+    public int getId()
+    {
+        return id;
+    }
+
+    public void setId(int id)
+    {
+        if(id == -1)
+            this.id = id;
     }
 }
