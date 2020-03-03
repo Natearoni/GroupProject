@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 //Nathan McKnight
 //Database Manager
+//All exceptions are thrown to the class using the manager.
 public class DBM extends SQLiteOpenHelper
 {
     private static final String DB_NAME = "TaskDB"; //database name
@@ -52,7 +53,8 @@ public class DBM extends SQLiteOpenHelper
         createQuery = "CREATE TABLE " + TABLE_NAMES[1] + "(" +
                 "priv_id" + " Integer PRIMARY KEY AUTOINCREMENT, " +
                 "priv_name" + " Text, " +
-                "description" + " Text )";
+                "description" + " Text, " +
+                "UNIQUE(priv_name) )";
         queries[0] = createQuery;
 
         //users table
@@ -68,9 +70,11 @@ public class DBM extends SQLiteOpenHelper
         //locations table
         createQuery = "CREATE TABLE " + TABLE_NAMES[4] + "(" +
                 "location_id" + " Integer PRIMARY KEY AUTOINCREMENT, " +
+                "location_name" + " Text, " +
                 "latitude" + " Real, " +
                 "longitude" + " Real, " +
-                "Radius" + " Real )";
+                "radius" + " Real, " +
+                "UNIQUE(location_name) )";
         queries[2] = createQuery;
 
         //tasks table
@@ -81,7 +85,7 @@ public class DBM extends SQLiteOpenHelper
                 "location_id" + " Integer, " +
                 "FOREIGN KEY(location_id) REFERENCES " + TABLE_NAMES[4] + "(location_id) " +
                 "CHECK(complete == 0 OR complete == 1), " +
-                "UNIQUE(user_name) )";
+                "UNIQUE(task_name) )";
         queries[3] = createQuery;
 
         //user_tasks bridge table
@@ -110,6 +114,9 @@ public class DBM extends SQLiteOpenHelper
         }
         onCreate(sqLiteDatabase); //recreate DB's tables.
     }
+
+    //Select Statements.\\
+    //Note: ID in the data structures are only set after a select statement due to auto incrementing primary key -- basically we don't know the ID until its actually inserted\\
 
     //Will only ever return 1 user since usernames are unique. (or null)
     public User selectUser(String user_name) //Untested
@@ -148,7 +155,63 @@ public class DBM extends SQLiteOpenHelper
         return task;
     }
 
-    //Insert functions
+    public Location selectLocation(String location_name)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.query(TABLE_NAMES[4],
+                new String[]{"location_id", "location_name", "latitude", "longitude", "radius"},
+                "location_name = ?",
+                new String[]{String.valueOf(location_name)},
+                null, null, null, null);
+
+        if(cur != null)
+            cur.moveToFirst();
+        else return null;
+        Location loc = new Location(cur.getString(0), cur.getDouble(0), cur.getDouble(1), cur.getDouble(2));
+        loc.setId(cur.getInt(0)); //0 should be the id.
+        return loc;
+    }
+
+    public Privilege selectPrivilege(String priv_name)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.query(TABLE_NAMES[1],
+                new String[]{"priv_id", "priv_name", "description"},
+                "priv_name = ?",
+                new String[]{String.valueOf(priv_name)},
+                null, null, null, null);
+
+        if(cur != null)
+            cur.moveToFirst();
+        else return null;
+        Privilege priv = new Privilege(cur.getString(0), cur.getString(1));
+        priv.setId(cur.getInt(0)); //0 should be the id.
+        return priv;
+    }
+
+    //assign a user to a task.
+    public void assign(String username, String taskname)
+    {
+        //TODO: Implement method
+    }
+
+    //get all tasks
+    public ArrayList<com.repella.groupproject.data.Task> selectAllTasks()
+    {
+        ArrayList<com.repella.groupproject.data.Task> result = new ArrayList();
+        //TODO: Implement Method
+        return result;
+    }
+
+    //get all users
+    public ArrayList<User> selectAllUsers()
+    {
+        ArrayList<User> result = new ArrayList();
+        //TODO: Implement Method
+        return result;
+    }
+
+    //Insert functions\\
     public void insert(User user) //Tested
     {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -177,6 +240,7 @@ public class DBM extends SQLiteOpenHelper
         cv = new ContentValues();
         cv.put("user_id", assigned.getId());
         cv.put("task_id", task.getId());
+        db.insert(TABLE_NAMES[2], null, cv);
         db.close();
         //Log.d(TAG, "insert::(task) Insert successful.");
     }
@@ -204,8 +268,8 @@ public class DBM extends SQLiteOpenHelper
         //Log.d(TAG, "insert::(privilege) Insert successful.");
     }
 
-    //Update functions
-    public void update(User uOld, User uNew) //Untested
+    //Update functions\\
+    private void update(User uOld, User uNew) //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -219,43 +283,98 @@ public class DBM extends SQLiteOpenHelper
     }
     public void update(String username, User uNew){ update(selectUser(username), uNew); }
 
-    public void update(Task task)
-    {
-
-    }
-
-    public void update(Location loc)
-    {
-
-    }
-
-    public void update(Privilege priv)
-    {
-
-    }
-
-    //Delete functions
-    public void delete(User user) //Untested
+    private void update(com.repella.groupproject.data.Task tOld, com.repella.groupproject.data.Task tNew)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{user.getUser_name()});
+        ContentValues cv = new ContentValues();
+        cv.put("task_name", tNew.getTask_name());
+        cv.put("complete", tNew.getComplete());
+        cv.put("location_id", tNew.getLocation_id());
+
+        db.update(TABLE_NAMES[3], cv, "task_id = ?", new String[]{""+tOld.getId()} );
         db.close();
     }
-    public void delete(String username){ delete(selectUser(username)); } //Potential bug here. Make sure to switch to figure out what type it is.
+    public void update(String taskOldName, com.repella.groupproject.data.Task taskNew) throws Exception { update(selectTask(taskOldName), taskNew); }
 
-    public void delete(Task task)
+    private void update(Location lOld, Location lNew)
     {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        //new values
+        cv.put("location_name", lNew.getName());
+        cv.put("latitude", lNew.getLatitude());
+        cv.put("longitude", lNew.getLongitude());
+        cv.put("radius", lNew.getRadius());
 
+        db.update(TABLE_NAMES[4], cv, "location_id = ?", new String[]{""+lOld.getId()});
+        db.close();
+    }
+    public void update(String locationName, Location lNew){ update(selectLocation(locationName), lNew); }
+
+    private void update(Privilege pOld, Privilege pNew)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        //new values
+        cv.put("priv_name", pNew.getPriv_name());
+        cv.put("description", pNew.getDescription());
+
+        db.update(TABLE_NAMES[1], cv, "priv_id = ?", new String[]{""+pOld.getId()});
+        db.close();
+    }
+    public void update(String privName, Privilege pNew){ update(selectPrivilege(privName), pNew); }
+
+    //Delete functions\\
+    //Give this delete function the name field of a particular. The other parameter is for the class name: User, Privilege, Task, Location
+    public void delete(String targetName, String className) throws Exception
+    {
+        switch(className)
+        {
+            case "User":
+                delete(selectUser(targetName));
+                break;
+            case "Task":
+                delete(selectTask(targetName));
+                break;
+            case "Location":
+                delete(selectLocation(targetName));
+                break;
+            case "Privilege":
+                delete(selectPrivilege(targetName));
+                break;
+            default:
+                throw new Exception("DBM:delete:: Class name is not an expected class name.");
+        }
     }
 
-    public void delete(Location loc)
+    private void delete(User user) //Untested
     {
-
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{""+user.getId()});
+        //TODO: Delete any associated records in the bridge table.
+        db.close();
     }
 
-    public void delete(Privilege priv)
+    private void delete(com.repella.groupproject.data.Task task)
     {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAMES[3], "task_id = ?", new String[]{""+task.getId()});
+        //TODO: Delete any associated records in the bridge table.
+        db.close();
+    }
 
+    private void delete(Location loc)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAMES[4], "location_id = ?", new String[]{""+loc.getId()});
+        db.close();
+    }
+
+    private void delete(Privilege priv)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAMES[3], "priv_id = ?", new String[]{""+priv.getId()});
+        db.close();
     }
 
     //returns # of records from a given table index. Index must fit into TABLE_NAMES above.

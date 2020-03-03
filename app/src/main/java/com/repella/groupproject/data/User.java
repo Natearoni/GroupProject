@@ -42,7 +42,7 @@ public class User
 
     public void setID(int id)
     {
-        if(id == -1)
+        if(this.id == -1)
             this.id = id;
     }
 }

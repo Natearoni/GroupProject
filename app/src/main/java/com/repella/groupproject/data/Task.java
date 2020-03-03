@@ -45,7 +45,7 @@ public class Task
 
     public void setId(int id)
     {
-        if(id == -1)
+        if(this.id == -1)
             this.id = id;
     }
 }
