@@ -59,7 +59,8 @@ public class DBM extends SQLiteOpenHelper
                 "user_name" + " Text, " +
                 "password" + " Text, " +
                 "priv_id" + " Integer, " +
-                "FOREIGN KEY(priv_id) REFERENCES " + TABLE_NAMES[1] + "(priv_id) )";
+                "FOREIGN KEY(priv_id) REFERENCES " + TABLE_NAMES[1] + "(priv_id)," +
+                "UNIQUE(user_name) )";
         queries[1] = createQuery;
 
         //locations table
@@ -207,7 +208,7 @@ public class DBM extends SQLiteOpenHelper
     {
 
     }
-    
+
     public void delete(Privilege priv)
     {
 
