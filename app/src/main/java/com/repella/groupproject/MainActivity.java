@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.repella.groupproject.data.Privilege;
 import com.repella.groupproject.data.User;
 
@@ -19,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        final EditText userName = (EditText) findViewById(R.id.username);
+        final EditText password = (EditText) findViewById(R.id.password);
+       // final Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Login Falied", Snackbar.LENGTH_LONG);
         //Create the database.
         dbm = new DBM(this.getApplicationContext());
 
@@ -41,12 +45,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button login = (Button) findViewById(R.id.loginButton);
+        final Button login = (Button) findViewById(R.id.loginButton);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                User userdb= dbm.selectUser(userName.getText().toString());
+                if (password.getText().toString().equals(userdb.getPassword())){
+                    Intent i = new Intent(getApplicationContext(), UserLanding.class);
+                    startActivity(i);
+                }else{
+                //    mySnackbar.show();
+                }
 
-                //TODO Authenticate user/password combo is accurate...
 
                 Intent i = new Intent(getApplicationContext(), UserLanding.class);
                 startActivity(i);
