@@ -224,6 +224,18 @@ public class DBM extends SQLiteOpenHelper
         db.close();
     }
 
+    public void setTaskCompleted(String taskName, boolean isCompleted) throws Exception
+    {
+        int c = isCompleted ? 1 : 0;
+
+        Task tsk = selectTask(taskName);
+        Task tskNew = selectTask(taskName); //just to be safe from any pass-by-reference accidents i select the same thing for a new object.
+        tskNew.setComplete(c);
+        if(tsk == null)
+            throw new Exception("DBM:setTaskCompleted:: Task does not exist.");
+        update(tsk, tskNew);
+    }
+
     //Returns all tasks assigned to the given user.
     public ArrayList<com.repella.groupproject.data.Task> selectAssigned(String username) throws Exception //**IMPORTANT TO TEST THIS ONE as the query is more complex.
     {
