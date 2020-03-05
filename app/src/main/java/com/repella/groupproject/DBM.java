@@ -106,7 +106,7 @@ public class DBM extends SQLiteOpenHelper
                 "user_id" + " Integer not null, " +
                 "task_id" + " Integer not null, " +
                 "FOREIGN KEY(user_id) REFERENCES " + TABLE_NAMES[0] + "(user_id)" +
-                "FOREIGN KEY(task_id) REFERENCES " + TABLE_NAMES[0] + "(task_id)" +
+                "FOREIGN KEY(task_id) REFERENCES " + TABLE_NAMES[3] + "(task_id)" +
                 "PRIMARY KEY(user_id, task_id) )";
         queries[4] = createQuery;
 
