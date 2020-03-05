@@ -10,13 +10,16 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.repella.groupproject.data.Location;
 import com.repella.groupproject.data.Privilege;
+import com.repella.groupproject.data.Task;
 import com.repella.groupproject.data.User;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "MActivity";
     public static DBM dbm; //database manager -- Nathan
 
     @Override
@@ -26,8 +29,20 @@ public class MainActivity extends AppCompatActivity {
         final EditText userName = (EditText) findViewById(R.id.username);
         final EditText password = (EditText) findViewById(R.id.password);
        // final Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Login Falied", Snackbar.LENGTH_LONG);
+
+
         //Create the database.
         dbm = new DBM(this.getApplicationContext());
+        /*//dbm.purge(getApplicationContext());
+        //Test Cases:
+        //make some fake data.
+        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
+        dbm.insert(new User("NotADick", "okmaybealittle", 0));
+        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
+        //query the fake data
+        ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
+        for(int i = 0; i < tsks.size(); i++)
+            Log.d(TAG, tsks.get(i).getTask_name()); */
 
         ArrayList<User> userList =  dbm.selectAllUsers();
 
@@ -38,15 +53,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Dick", userList.get(i).getUser_name());
             }
         }
-
-        //Test Cases:
-        //Privilege priv = new Privilege("Normal User", "Access to data/items only the users are allowed to see.");
-        User user = new User("Nathan", "ASDF", 1);
-        //dbm.insert(priv);
-        dbm.insert(user);
-        User me = dbm.selectUser("Nathan");
-        Log.d("DBMSelect","" + me.getUser_name() + " " + me.getPassword() + " " + me.getPriv_id());
-        //dbm.purge(this.getApplicationContext()); //READ DBM DOCUMENTATION BEFORE PLAYING AROUND WITH THIS.
 
         Button create = (Button) findViewById(R.id.registerButton);
         create.setOnClickListener(new View.OnClickListener() {

@@ -608,7 +608,7 @@ public class DBM extends SQLiteOpenHelper
 
     //Purges entire database's records.
     //yeah. be careful with this and make sure to **comment it out after using it.** otherwise something like a buffer overflow could be exploited to use this function.
-    public void purge(Context ctx)
+    /*public void purge(Context ctx)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String rip = "DROP TABLE IF EXISTS ";
@@ -616,5 +616,5 @@ public class DBM extends SQLiteOpenHelper
             db.execSQL(rip + TABLE_NAMES[i]);
         Toast.makeText(ctx, "Database has been successfully purged.", Toast.LENGTH_SHORT).show();
         onCreate(db);
-    }
+    }*/
 }
