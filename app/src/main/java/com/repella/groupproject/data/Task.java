@@ -8,12 +8,12 @@ public class Task
     private int location_id;
 
     //Throws a fit when complete is not 1 or 0.
-    public Task(String name, int complete, int location_id) throws Exception
+    public Task(String name, int complete, int location_id)
     {
         task_name = name;
         if(complete == 0 || complete == 1)
             this.complete = complete;
-        else throw new Exception("Warning: Task:Task::Complete::: Not a 0 or a 1.");
+        else this.complete = 0;
         this.location_id = location_id;
     }
 

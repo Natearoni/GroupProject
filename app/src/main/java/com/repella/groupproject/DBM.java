@@ -47,8 +47,6 @@ public class DBM extends SQLiteOpenHelper
             insert(Object data); //where Object is any of the classes in -> com.repella.groupproject.data
      */
 
-
-
     public DBM(Context context)
     {
         super(context, DB_NAME, null, DB_VERS);
@@ -133,6 +131,36 @@ public class DBM extends SQLiteOpenHelper
     //Select Statements.\\
     //Note: ID in the data structures are only set after a select statement due to auto incrementing primary key -- basically we don't know the ID until its actually inserted\\
 
+    //Selects all tasks assigned to a given user.
+    public ArrayList<com.repella.groupproject.data.Task> selectUserTasks(String userName)
+    {
+        ArrayList<com.repella.groupproject.data.Task> result = new ArrayList<>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        User usr = selectUser(userName);
+
+        //retrieves all tasks for the given user by id.
+        String query = "SELECT task_name FROM " + TABLE_NAMES[3] + " INNER JOIN " + TABLE_NAMES[2] + " ON " + TABLE_NAMES[2]+".user_id = " + usr.getId();
+
+        Cursor cur = db.rawQuery(query, null);
+
+        if(cur != null && cur.moveToFirst())
+        {
+            do{
+                result.add(selectTask(cur.getString(cur.getColumnIndex("task_name"))));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
+        db.close();
+        return result;
+    }
+
     //Will only ever return 1 user since usernames are unique. (or null)
     public User selectUser(String user_name) //Untested
     {
@@ -140,20 +168,22 @@ public class DBM extends SQLiteOpenHelper
         Cursor cur = db.query(TABLE_NAMES[0],
                 new String[]{"user_id", "user_name", "password", "priv_id"},
                 "user_name = ?",
-                new String[]{String.valueOf(user_name)},
+                new String[]{user_name},
                 null, null, null, null);
 
-        if(cur != null)
-            cur.moveToFirst();
+        if(cur != null && cur.moveToFirst())
+        {
+            User user = new User(cur.getString(cur.getColumnIndex("user_name")), cur.getString(cur.getColumnIndex("password")), cur.getInt(cur.getColumnIndex("priv_id")));
+            user.setID(cur.getInt(cur.getColumnIndex("user_id"))); //0 should be id, 1 should be privilege.
+            return user;
+        }
         else return null;
-        User user = new User(cur.getString(0), cur.getString(1), cur.getInt(1));
-        user.setID(cur.getInt(0)); //0 should be id, 1 should be privilege.
-        return user;
+
     }
 
     //Tasks must be defined this way because there is another defintion for Tasks. Probably for multi-threaded java apps.
     //Task names are also unique therefore only 1 task will be returned. (or null)
-    public com.repella.groupproject.data.Task selectTask(String task_name) throws Exception //Untested
+    public com.repella.groupproject.data.Task selectTask(String task_name) //Untested
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.query(TABLE_NAMES[3],
@@ -162,12 +192,15 @@ public class DBM extends SQLiteOpenHelper
                 new String[]{String.valueOf(task_name)},
                 null, null, null, null);
 
-        if(cur != null)
-            cur.moveToFirst();
+        if(cur != null && cur.moveToFirst())
+        {
+            com.repella.groupproject.data.Task task = new com.repella.groupproject.data.Task(cur.getString(cur.getColumnIndex("task_name")),
+                    cur.getInt(cur.getColumnIndex("complete")),
+                    cur.getInt(cur.getColumnIndex("location_id")));
+            task.setId(cur.getInt(cur.getColumnIndex("task_id")));
+            return task;
+        }
         else return null;
-        com.repella.groupproject.data.Task task = new com.repella.groupproject.data.Task(cur.getString(0), cur.getInt(1), cur.getInt(2));
-        task.setId(cur.getInt(0)); //0 should be the id.
-        return task;
     }
 
     public Location selectLocation(String location_name)
@@ -179,12 +212,16 @@ public class DBM extends SQLiteOpenHelper
                 new String[]{String.valueOf(location_name)},
                 null, null, null, null);
 
-        if(cur != null)
-            cur.moveToFirst();
+        if(cur != null && cur.moveToFirst())
+        {
+            Location loc = new Location(cur.getString(cur.getColumnIndex("location_name")),
+                    cur.getDouble(cur.getColumnIndex("latitude")),
+                    cur.getDouble(cur.getColumnIndex("longitude")),
+                    cur.getDouble(cur.getColumnIndex("radius")));
+            loc.setId(cur.getInt(cur.getColumnIndex("location_id"))); //0 should be the id.
+            return loc;
+        }
         else return null;
-        Location loc = new Location(cur.getString(0), cur.getDouble(0), cur.getDouble(1), cur.getDouble(2));
-        loc.setId(cur.getInt(0)); //0 should be the id.
-        return loc;
     }
 
     public Privilege selectPrivilege(String priv_name)
@@ -196,24 +233,32 @@ public class DBM extends SQLiteOpenHelper
                 new String[]{String.valueOf(priv_name)},
                 null, null, null, null);
 
-        if(cur != null)
-            cur.moveToFirst();
+        if(cur != null && cur.moveToFirst())
+        {
+            Privilege priv = new Privilege(cur.getString(cur.getColumnIndex("priv_name")),
+                    cur.getString(cur.getColumnIndex("description")));
+            priv.setId(cur.getInt(cur.getColumnIndex("priv_id"))); //0 should be the id.
+            return priv;
+        }
         else return null;
-        Privilege priv = new Privilege(cur.getString(0), cur.getString(1));
-        priv.setId(cur.getInt(0)); //0 should be the id.
-        return priv;
     }
 
     //Assign a user to a task\\
-    public void assign(String username, String taskname) throws Exception
+    public void assign(String username, String taskname)
     {
         User usr = selectUser(username);
         com.repella.groupproject.data.Task tsk = selectTask(taskname);
 
         if(usr == null)
-            throw new Exception("DBM:assign:: User not found.");
+        {
+            Log.d(TAG, "assign: User is null. Returning.");
+            return;
+        }
         if(tsk == null)
-            throw new Exception("DBM:assign:: Task not found.");
+        {
+            Log.d(TAG, "assign: Task is null. Returning.");
+            return;
+        }
 
         //insert into bridge table
         SQLiteDatabase db = this.getWritableDatabase();
@@ -224,7 +269,7 @@ public class DBM extends SQLiteOpenHelper
         db.close();
     }
 
-    public void setTaskCompleted(String taskName, boolean isCompleted) throws Exception
+    public void setTaskCompleted(String taskName, boolean isCompleted)
     {
         int c = isCompleted ? 1 : 0;
 
@@ -232,12 +277,15 @@ public class DBM extends SQLiteOpenHelper
         Task tskNew = selectTask(taskName); //just to be safe from any pass-by-reference accidents i select the same thing for a new object.
         tskNew.setComplete(c);
         if(tsk == null)
-            throw new Exception("DBM:setTaskCompleted:: Task does not exist.");
+        {
+            Log.d(TAG, "setTaskCompleted: Task is null. Returning.");
+            return;
+        }
         update(tsk, tskNew);
     }
 
     //Returns all tasks assigned to the given user.
-    public ArrayList<com.repella.groupproject.data.Task> selectAssigned(String username) throws Exception //**IMPORTANT TO TEST THIS ONE as the query is more complex.
+    public ArrayList<com.repella.groupproject.data.Task> selectAssigned(String username) //**IMPORTANT TO TEST THIS ONE as the query is more complex.
     {
         ArrayList<com.repella.groupproject.data.Task> result = new ArrayList();
         User usr = selectUser(username);
@@ -250,7 +298,7 @@ public class DBM extends SQLiteOpenHelper
 
         Cursor cur = db.rawQuery(query,null);
 
-        if(cur.moveToFirst())
+        if(cur != null && cur.moveToFirst())
         {
             do{
                 result.add(selectTask(cur.getString(0)));
@@ -266,7 +314,7 @@ public class DBM extends SQLiteOpenHelper
         return result;
     }
 
-    public ArrayList<com.repella.groupproject.data.Task> selectAllTasks() throws Exception
+    public ArrayList<com.repella.groupproject.data.Task> selectAllTasks()
     {
         ArrayList<com.repella.groupproject.data.Task> result = new ArrayList();
 
@@ -275,7 +323,7 @@ public class DBM extends SQLiteOpenHelper
 
         Cursor cur = db.rawQuery(query,null);
 
-        if(cur.moveToFirst())
+        if(cur != null && cur.moveToFirst())
         {
             do{
                 result.add(selectTask(cur.getString(0)));
@@ -301,7 +349,7 @@ public class DBM extends SQLiteOpenHelper
 
         Cursor cur = db.rawQuery(query,null);
 
-        if(cur.moveToFirst())
+        if(cur != null && cur.moveToFirst())
         {
             do{
                 result.add(selectUser(cur.getString(0)));
@@ -326,7 +374,7 @@ public class DBM extends SQLiteOpenHelper
 
         Cursor cur = db.rawQuery(query,null);
 
-        if(cur.moveToFirst())
+        if(cur != null && cur.moveToFirst())
         {
             do{
                 result.add(selectLocation(cur.getString(0)));
@@ -351,7 +399,7 @@ public class DBM extends SQLiteOpenHelper
 
         Cursor cur = db.rawQuery(query,null);
 
-        if(cur.moveToFirst())
+        if(cur != null && cur.moveToFirst())
         {
             do{
                 result.add(selectPrivilege(cur.getString(0)));
@@ -370,7 +418,7 @@ public class DBM extends SQLiteOpenHelper
     //Insert functions\\
     public void insert(User user) //Tested
     {
-        if(selectUser(user.getUser_name()) == null)
+        if(selectUser(user.getUser_name()) != null)
             return;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -384,9 +432,9 @@ public class DBM extends SQLiteOpenHelper
     }
 
     //Insert a task for a given user by username.
-    public void insert(com.repella.groupproject.data.Task task, String username) throws Exception //Untested
+    public void insert(com.repella.groupproject.data.Task task, String username) //Untested
     {
-        if(selectTask(task.getTask_name()) == null)
+        if(selectTask(task.getTask_name()) != null)
             return;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -409,7 +457,7 @@ public class DBM extends SQLiteOpenHelper
 
     public void insert(Location loc) //Untested
     {
-        if(selectLocation(loc.getName()) == null)
+        if(selectLocation(loc.getName()) != null)
             return;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -424,7 +472,7 @@ public class DBM extends SQLiteOpenHelper
 
     public void insert(Privilege priv) //Tested
     {
-        if(selectPrivilege(priv.getPriv_name()) == null)
+        if(selectPrivilege(priv.getPriv_name()) != null)
             return;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -462,7 +510,7 @@ public class DBM extends SQLiteOpenHelper
         db.update(TABLE_NAMES[3], cv, "task_id = ?", new String[]{""+tOld.getId()} );
         db.close();
     }
-    public void update(String taskOldName, com.repella.groupproject.data.Task taskNew) throws Exception { update(selectTask(taskOldName), taskNew); }
+    public void update(String taskOldName, com.repella.groupproject.data.Task taskNew) { update(selectTask(taskOldName), taskNew); }
 
     private void update(Location lOld, Location lNew)
     {
@@ -494,7 +542,7 @@ public class DBM extends SQLiteOpenHelper
 
     //Delete functions\\
     //Give this delete function the name field of a particular. The other parameter is for the class name: User, Privilege, Task, Location
-    public void delete(String targetName, String className) throws Exception
+    public void delete(String targetName, String className)
     {
         switch(className)
         {
@@ -511,7 +559,7 @@ public class DBM extends SQLiteOpenHelper
                 delete(selectPrivilege(targetName));
                 break;
             default:
-                throw new Exception("DBM:delete:: Class name is not an expected class name.");
+                Log.d(TAG, "delete: Could not delete because class name is unknown. Returning.");
         }
     }
 
@@ -560,7 +608,7 @@ public class DBM extends SQLiteOpenHelper
 
     //Purges entire database's records.
     //yeah. be careful with this and make sure to **comment it out after using it.** otherwise something like a buffer overflow could be exploited to use this function.
-    /*public void purge(Context ctx)
+    public void purge(Context ctx)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String rip = "DROP TABLE IF EXISTS ";
@@ -568,5 +616,5 @@ public class DBM extends SQLiteOpenHelper
             db.execSQL(rip + TABLE_NAMES[i]);
         Toast.makeText(ctx, "Database has been successfully purged.", Toast.LENGTH_SHORT).show();
         onCreate(db);
-    }*/
+    }
 }
