@@ -13,6 +13,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.repella.groupproject.data.Privilege;
 import com.repella.groupproject.data.User;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     public static DBM dbm; //database manager -- Nathan
@@ -26,6 +28,16 @@ public class MainActivity extends AppCompatActivity {
        // final Snackbar mySnackbar = Snackbar.make(findViewById(R.id.myCoordinatorLayout), "Login Falied", Snackbar.LENGTH_LONG);
         //Create the database.
         dbm = new DBM(this.getApplicationContext());
+
+        ArrayList<User> userList =  dbm.selectAllUsers();
+
+        if (userList == null){
+            Log.d("Dick", "User is Null");
+        }else{
+            for(int i =0; i <userList.size(); i++){
+                Log.d("Dick", userList.get(i).getUser_name());
+            }
+        }
 
         //Test Cases:
         //Privilege priv = new Privilege("Normal User", "Access to data/items only the users are allowed to see.");
