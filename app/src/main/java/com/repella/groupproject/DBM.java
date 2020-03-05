@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.repella.groupproject.data.*;
+import com.repella.groupproject.data.Task;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,20 @@ public class DBM extends SQLiteOpenHelper
             "Tasks",
             "Locations"
     };
+
+    /*
+        Creating a task:
+        Location loc = selectLocation(locationName); //Make sure to insert at least 1 location.
+        Task tsk = new Task(taskName, 0, loc.getId()); //^required to use select due to ID not existing until AFTER a select from DB.
+
+        Assigning a user to the task:
+            assign(userName, taskName);
+
+        Inserting anything into DB:
+            insert(Object data); //where Object is any of the classes in -> com.repella.groupproject.data
+     */
+
+
 
     public DBM(Context context)
     {
@@ -189,31 +204,163 @@ public class DBM extends SQLiteOpenHelper
         return priv;
     }
 
-    //assign a user to a task.
-    public void assign(String username, String taskname)
+    //Assign a user to a task\\
+    public void assign(String username, String taskname) throws Exception
     {
-        //TODO: Implement method
+        User usr = selectUser(username);
+        com.repella.groupproject.data.Task tsk = selectTask(taskname);
+
+        if(usr == null)
+            throw new Exception("DBM:assign:: User not found.");
+        if(tsk == null)
+            throw new Exception("DBM:assign:: Task not found.");
+
+        //insert into bridge table
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("user_id", usr.getId());
+        cv.put("task_id", tsk.getId());
+        db.insert(TABLE_NAMES[2], null, cv);
+        db.close();
     }
 
-    //get all tasks
-    public ArrayList<com.repella.groupproject.data.Task> selectAllTasks()
+    //Returns all tasks assigned to the given user.
+    public ArrayList<com.repella.groupproject.data.Task> selectAssigned(String username) throws Exception //**IMPORTANT TO TEST THIS ONE as the query is more complex.
     {
         ArrayList<com.repella.groupproject.data.Task> result = new ArrayList();
-        //TODO: Implement Method
+        User usr = selectUser(username);
+
+        SQLiteDatabase db = this.getWritableDatabase(); //2 = user_task, 3 = tasks
+        String query = "SELECT task_name FROM " + TABLE_NAMES[3] +
+                " INNER JOIN " + TABLE_NAMES[2] +
+                " ON " + TABLE_NAMES[3] + ".task_id = " + TABLE_NAMES[2] + ".task_id " +
+                "AND " + TABLE_NAMES[2] + ".user_id = " + usr.getId();
+
+        Cursor cur = db.rawQuery(query,null);
+
+        if(cur.moveToFirst())
+        {
+            do{
+                result.add(selectTask(cur.getString(0)));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
         return result;
     }
 
-    //get all users
+    public ArrayList<com.repella.groupproject.data.Task> selectAllTasks() throws Exception
+    {
+        ArrayList<com.repella.groupproject.data.Task> result = new ArrayList();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT task_name FROM " + TABLE_NAMES[3];
+
+        Cursor cur = db.rawQuery(query,null);
+
+        if(cur.moveToFirst())
+        {
+            do{
+                result.add(selectTask(cur.getString(0)));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
+        return result;
+    }
+
+    //Select all functions\\
     public ArrayList<User> selectAllUsers()
     {
         ArrayList<User> result = new ArrayList();
-        //TODO: Implement Method
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT user_name FROM " + TABLE_NAMES[0];
+
+        Cursor cur = db.rawQuery(query,null);
+
+        if(cur.moveToFirst())
+        {
+            do{
+                result.add(selectUser(cur.getString(0)));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
+        return result;
+    }
+
+    public ArrayList<Location> selectAllLocations()
+    {
+        ArrayList<Location> result = new ArrayList();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT location_name FROM " + TABLE_NAMES[4];
+
+        Cursor cur = db.rawQuery(query,null);
+
+        if(cur.moveToFirst())
+        {
+            do{
+                result.add(selectLocation(cur.getString(0)));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
+        return result;
+    }
+
+    public ArrayList<Privilege> selectAllPrivileges()
+    {
+        ArrayList<Privilege> result = new ArrayList();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT priv_name FROM " + TABLE_NAMES[1];
+
+        Cursor cur = db.rawQuery(query,null);
+
+        if(cur.moveToFirst())
+        {
+            do{
+                result.add(selectPrivilege(cur.getString(0)));
+            } while(cur.moveToNext());
+            db.close();
+        }
+        else
+        {
+            db.close();
+            return null;
+        }
+
         return result;
     }
 
     //Insert functions\\
     public void insert(User user) //Tested
     {
+        if(selectUser(user.getUser_name()) == null)
+            return;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("user_name", user.getUser_name());
@@ -227,6 +374,9 @@ public class DBM extends SQLiteOpenHelper
     //Insert a task for a given user by username.
     public void insert(com.repella.groupproject.data.Task task, String username) throws Exception //Untested
     {
+        if(selectTask(task.getTask_name()) == null)
+            return;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("task_name", task.getTask_name());
@@ -247,6 +397,9 @@ public class DBM extends SQLiteOpenHelper
 
     public void insert(Location loc) //Untested
     {
+        if(selectLocation(loc.getName()) == null)
+            return;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("latitude", loc.getLatitude());
@@ -259,6 +412,9 @@ public class DBM extends SQLiteOpenHelper
 
     public void insert(Privilege priv) //Tested
     {
+        if(selectPrivilege(priv.getPriv_name()) == null)
+            return;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("priv_name", priv.getPriv_name());
@@ -351,7 +507,7 @@ public class DBM extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{""+user.getId()});
-        //TODO: Delete any associated records in the bridge table.
+        db.delete(TABLE_NAMES[2], "user_id = ?", new String[]{""+user.getId()});
         db.close();
     }
 
@@ -359,7 +515,7 @@ public class DBM extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[3], "task_id = ?", new String[]{""+task.getId()});
-        //TODO: Delete any associated records in the bridge table.
+        db.delete(TABLE_NAMES[2], "task_id = ?", new String[]{""+task.getId()});
         db.close();
     }
 
