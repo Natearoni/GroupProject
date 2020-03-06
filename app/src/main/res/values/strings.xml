@@ -12,7 +12,8 @@
     <string name="login_failed">"Login failed"</string>
     <string name="title_activity_create_user">create_user</string>
     <string name="create_user">Create User</string>
-
+    <string name ="fLNotification_name">Failed Login</string>
+    <string name ="fLNotification_description">Login attempt has failed please try again</string>
     <!-- Strings related to general labeling-->
     <string name="action_add_task">Add Task</string>
     <string name="action_remove_task">Del</string>
