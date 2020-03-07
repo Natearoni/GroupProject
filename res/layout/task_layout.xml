@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="horizontal"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
+    android:background="@drawable/border">
+
+    <TextView
+        android:id="@+id/task_name"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/location_name"
+        app:layout_constraintEnd_toStartOf="@+id/delete_button"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/location_name"
+        android:layout_width="379dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="6dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.883" />
+
+    <ImageButton
+        android:id="@+id/complete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/panelBackground"
+        android:clickable="true"
+        android:contentDescription="@string/action_complete_task"
+        android:focusable="true"
+        android:scaleType="fitEnd"
+        android:src="@android:drawable/ic_menu_compass"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/task_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/modify_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/panelBackground"
+        android:clickable="true"
+        android:contentDescription="@string/action_modify_task"
+        android:focusable="true"
+        android:scaleType="fitEnd"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintBottom_toTopOf="@+id/delete_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/task_name"
+        app:layout_constraintTop_toBottomOf="@+id/complete_button"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/panelBackground"
+        android:clickable="true"
+        android:contentDescription="@string/action_remove_task"
+        android:focusable="true"
+        android:scaleType="fitEnd"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/location_name"
+        app:layout_constraintTop_toBottomOf="@+id/location_name"
+        app:layout_constraintVertical_bias="1.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
