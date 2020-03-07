@@ -229,7 +229,7 @@ public class DBM extends SQLiteOpenHelper
         else return null;
     }
 
-    public Location selectLocation(String location_name)
+    private Location selectLocation(String location_name) //currently unfunctioning for some reason so made private for now?
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.query(TABLE_NAMES[4],
@@ -247,7 +247,11 @@ public class DBM extends SQLiteOpenHelper
             loc.setId(cur.getInt(cur.getColumnIndex("location_id"))); //0 should be the id.
             return loc;
         }
-        else return null;
+        else
+        {
+            Log.d(TAG, "selectLocation: LOCATION IS NULL " + location_name);
+            return null;
+        }
     }
 
     public Privilege selectPrivilege(String priv_name)
@@ -396,14 +400,21 @@ public class DBM extends SQLiteOpenHelper
         ArrayList<Location> result = new ArrayList();
 
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT location_name FROM " + TABLE_NAMES[4];
+        String query = "SELECT * FROM " + TABLE_NAMES[4];
 
         Cursor cur = db.rawQuery(query,null);
 
         if(cur != null && cur.moveToFirst())
         {
             do{
-                result.add(selectLocation(cur.getString(0)));
+                Location loc = new Location(
+                        cur.getString(cur.getColumnIndex("location_name")),
+                        cur.getDouble(cur.getColumnIndex("latitude")),
+                        cur.getDouble(cur.getColumnIndex("longitude")),
+                        cur.getDouble(cur.getColumnIndex("radius"))
+                        );
+                loc.setId(cur.getInt(cur.getColumnIndex("location_id")));
+                result.add(loc);
             } while(cur.moveToNext());
             db.close();
         }
@@ -488,6 +499,7 @@ public class DBM extends SQLiteOpenHelper
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put("location_name", loc.getName());
         cv.put("latitude", loc.getLatitude());
         cv.put("longitude", loc.getLongitude());
         cv.put("radius", loc.getRadius());
@@ -634,7 +646,7 @@ public class DBM extends SQLiteOpenHelper
 
     //Purges entire database's records.
     //yeah. be careful with this and make sure to **comment it out after using it.** otherwise something like a buffer overflow could be exploited to use this function.
-    /*public void purge(Context ctx)
+    public void purge(Context ctx)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         String rip = "DROP TABLE IF EXISTS ";
@@ -642,5 +654,5 @@ public class DBM extends SQLiteOpenHelper
             db.execSQL(rip + TABLE_NAMES[i]);
         Toast.makeText(ctx, "Database has been successfully purged.", Toast.LENGTH_SHORT).show();
         onCreate(db);
-    }*/
+    }
 }

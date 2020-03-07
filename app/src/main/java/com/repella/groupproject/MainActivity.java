@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,12 +42,16 @@ public class MainActivity extends AppCompatActivity {
         //Test Cases:
         //make some fake data.
         dbm.insert(new Location("Benis, Iran", 0, 0, 0));
-        dbm.insert(new User("NotADick", "okmaybealittle", 0));
-        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
-        //query the fake data
-        ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
+        //dbm.insert(new User("NotADick", "okmaybealittle", 0));
+        //dbm.insert(new Task("Go to Bagina, India", 0, 1), "NotADick");
+
+        /*ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
         for(int i = 0; i < tsks.size(); i++)
-            Log.d(TAG, tsks.get(i).getTask_name());
+            Log.d(TAG, tsks.get(i).getTask_name());*/
+
+        /*ArrayList<Location> locs = dbm.selectAllLocations();
+        for(int i = 0; i < locs.size(); i++)
+            Log.d(TAG, "onCreate: " + locs.get(i).getId() + " " + locs.get(i).getName());*/
 
 
 

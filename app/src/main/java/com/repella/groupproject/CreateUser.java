@@ -25,8 +25,9 @@ public class CreateUser extends AppCompatActivity {
             public void onClick(View v) {
                 User createUser = new User(userName.getText().toString(),password.getText().toString(),1);
                 dbm.insert(createUser);
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
+                //Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                //startActivity(i);
+                finish();
             }
         });
     }

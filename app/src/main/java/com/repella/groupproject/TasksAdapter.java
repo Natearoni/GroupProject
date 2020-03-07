@@ -42,18 +42,11 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         nameView.setText(task.getTask_name());
 
 
-        //Location loc = MainActivity.dbm.selectLocationByTaskLocationId(task.getLocation_id());
-        //Location loc = MainActivity.dbm.selectLocationByTaskLocationId(0);
-
-
-        /*dbm.insert(new Location("testing", 0, 0, 0));
-        ArrayList<Location> locs = MainActivity.dbm.selectAllLocations();
-        for(int i = 0;  i < locs.size(); i++)
-            Log.d("last problem", "onBindViewHolder: " + locs.get(i).getId());*/
-        //if(loc == null)
-            //Log.d("last problem", "onBindViewHolder: NULL LOC.");
-        //locationView.setText(loc.getName()); //last problem.
-        locationView.setText("DEFAULT_LOC");
+        Location loc = MainActivity.dbm.selectLocationByTaskLocationId(task.getLocation_id());
+        if(loc == null)
+            Log.d("last problem", "onBindViewHolder: NULL LOC.");
+        locationView.setText(loc.getName()); //last problem.
+        //locationView.setText("DEFAULT_LOC");
 
 
 
@@ -65,6 +58,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         delButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dbm.delete(viewHolder.nameTaskView.getText().toString(), "Task");
                 taskList.remove(viewHolder.getAdapterPosition());
                 notifyDataSetChanged();
             }
