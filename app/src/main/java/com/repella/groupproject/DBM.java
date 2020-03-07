@@ -131,6 +131,28 @@ public class DBM extends SQLiteOpenHelper
     //Select Statements.\\
     //Note: ID in the data structures are only set after a select statement due to auto incrementing primary key -- basically we don't know the ID until its actually inserted\\
 
+    //Testing...
+    public Location selectLocationByTaskLocationId(int id)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.query(TABLE_NAMES[4],
+                new String[]{"location_id", "location_name", "latitude", "longitude", "radius"},
+                "location_id = ?",
+                new String[]{String.valueOf(id)},
+                null, null, null, null);
+
+        if(cur != null && cur.moveToFirst())
+        {
+            Location loc = new Location(cur.getString(cur.getColumnIndex("location_name")),
+                    cur.getDouble(cur.getColumnIndex("latitude")),
+                    cur.getDouble(cur.getColumnIndex("longitude")),
+                    cur.getDouble(cur.getColumnIndex("radius")));
+            loc.setId(cur.getInt(cur.getColumnIndex("location_id"))); //0 should be the id.
+            return loc;
+        }
+        else return null;
+    }
+
     //Selects all tasks assigned to a given user.
     public ArrayList<com.repella.groupproject.data.Task> selectUserTasks(String userName)
     {

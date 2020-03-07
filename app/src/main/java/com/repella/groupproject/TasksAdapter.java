@@ -10,11 +10,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.repella.groupproject.data.Location;
 import com.repella.groupproject.data.Task;
 
 import java.util.ArrayList;
 
 import static com.repella.groupproject.MainActivity.TAG;
+import static com.repella.groupproject.MainActivity.dbm;
 
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
 
@@ -38,8 +40,24 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         TextView nameView = viewHolder.nameTaskView;
         TextView locationView = viewHolder.locationTaskView;
         nameView.setText(task.getTask_name());
-        locationView.setText(task.getLocation_id());
 
+
+        //Location loc = MainActivity.dbm.selectLocationByTaskLocationId(task.getLocation_id());
+        //Location loc = MainActivity.dbm.selectLocationByTaskLocationId(0);
+
+
+        /*dbm.insert(new Location("testing", 0, 0, 0));
+        ArrayList<Location> locs = MainActivity.dbm.selectAllLocations();
+        for(int i = 0;  i < locs.size(); i++)
+            Log.d("last problem", "onBindViewHolder: " + locs.get(i).getId());*/
+        //if(loc == null)
+            //Log.d("last problem", "onBindViewHolder: NULL LOC.");
+        //locationView.setText(loc.getName()); //last problem.
+        locationView.setText("DEFAULT_LOC");
+
+
+
+        //Log.d("last problem", "onBindViewHolder: " + task.getLocation_id());
         ImageButton delButton = viewHolder.delButton;
         ImageButton modButton = viewHolder.modButton;
         ImageButton completeButton = viewHolder.completeButton;
