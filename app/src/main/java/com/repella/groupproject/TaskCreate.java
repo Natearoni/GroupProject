@@ -31,8 +31,9 @@ public class TaskCreate extends AppCompatActivity {
 
                 MainActivity.dbm.insert(new com.repella.groupproject.data.Task(task.getText().toString(), 0, 0), MainActivity.dbm.selectUser(extras.getString("LOGGED_IN_USER")).getUser_name());
                          Log.d("GREATSUCCESS", "WE DID IT?");
-                Intent i = new Intent(getApplicationContext(), UserLanding.class);
-                startActivity(i);
+                //Intent i = new Intent(getApplicationContext(), UserLanding.class);
+                //startActivity(i);
+                finish();
             }
         });
     }

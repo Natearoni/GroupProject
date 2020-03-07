@@ -177,7 +177,11 @@ public class DBM extends SQLiteOpenHelper
             user.setID(cur.getInt(cur.getColumnIndex("user_id"))); //0 should be id, 1 should be privilege.
             return user;
         }
-        else return null;
+        else
+        {
+            Log.d(TAG, "selectUser: User Not Found! " + user_name);
+            return null;
+        }
 
     }
 

@@ -40,14 +40,14 @@ public class MainActivity extends AppCompatActivity {
         //dbm.purge(getApplicationContext());
         //Test Cases:
         //make some fake data.
-//        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
-//        dbm.insert(new User("NotADick", "okmaybealittle", 0));
-//        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
+        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
+        dbm.insert(new User("NotADick", "okmaybealittle", 0));
+        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
         //query the fake data
-        //ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
-//        for(int i = 0; i < tsks.size(); i++)
-//            Log.d(TAG, tsks.get(i).getTask_name());
-//
+        ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
+        for(int i = 0; i < tsks.size(); i++)
+            Log.d(TAG, tsks.get(i).getTask_name());
+
 
 
         Button create = (Button) findViewById(R.id.registerButton);
@@ -64,9 +64,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String username = userName.getText().toString();
+                Log.d(TAG, "onClick: " + userName.getText());
                 if(username==" ") {
                     Toast.makeText(getApplicationContext(), "You forgot your username",
                             Toast.LENGTH_SHORT).show();
+
+                    //not a very good practice since it will layer activities in this case.
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                 }else {

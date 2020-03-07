@@ -1,6 +1,7 @@
 package com.repella.groupproject;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import com.repella.groupproject.data.Task;
 
 import java.util.ArrayList;
 
+import static com.repella.groupproject.MainActivity.TAG;
+
 public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> {
 
     @Override
@@ -24,13 +27,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         View taskView = inflater.inflate(R.layout.task_layout, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(taskView);
+        Log.d("ADP", "onBindViewHolder: am i called?");
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final TasksAdapter.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final TasksAdapter.ViewHolder viewHolder, final int position) { //never called
         com.repella.groupproject.data.Task task = taskList.get(position);
-
+        Log.d("ADP", "onBindViewHolder: " + taskList.get(position).getTask_name());
         TextView nameView = viewHolder.nameTaskView;
         TextView locationView = viewHolder.locationTaskView;
         nameView.setText(task.getTask_name());
@@ -51,7 +55,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return 0;
+        return taskList.size();
     }
 
 
