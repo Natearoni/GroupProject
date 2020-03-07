@@ -1,5 +1,9 @@
 package com.repella.groupproject.data;
 
+import com.repella.groupproject.DBM;
+
+import java.util.ArrayList;
+
 public class Task
 {
     private int id = -1; //only set during a select statement.

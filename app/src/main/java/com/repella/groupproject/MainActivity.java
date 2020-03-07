@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MActivity";
-    public static DBM dbm; //database manager -- Nathan
+    public static DBM dbm; //database manager -- Nathan McKnight
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,26 +37,18 @@ public class MainActivity extends AppCompatActivity {
 
         //Create the database.
         dbm = new DBM(this.getApplicationContext());
-        /*//dbm.purge(getApplicationContext());
+        //dbm.purge(getApplicationContext());
         //Test Cases:
         //make some fake data.
-        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
-        dbm.insert(new User("NotADick", "okmaybealittle", 0));
-        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
+//        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
+//        dbm.insert(new User("NotADick", "okmaybealittle", 0));
+//        dbm.insert(new Task("Go to Bagina, India", 0, 0), "NotADick");
         //query the fake data
-        ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
-        for(int i = 0; i < tsks.size(); i++)
-            Log.d(TAG, tsks.get(i).getTask_name()); */
+        //ArrayList<Task> tsks = dbm.selectUserTasks("NotADick");
+//        for(int i = 0; i < tsks.size(); i++)
+//            Log.d(TAG, tsks.get(i).getTask_name());
+//
 
-        ArrayList<User> userList =  dbm.selectAllUsers();
-
-        if (userList == null){
-            Log.d("Dick", "User is Null");
-        }else{
-            for(int i =0; i <userList.size(); i++){
-                Log.d("Dick", userList.get(i).getUser_name());
-            }
-        }
 
         Button create = (Button) findViewById(R.id.registerButton);
         create.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Login Succes",
                                 Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(getApplicationContext(), UserLanding.class);
+                        i.putExtra("USER_NAME", username);
                         startActivity(i);
                     } else {
                         Toast.makeText(getApplicationContext(), "Login Failed",
