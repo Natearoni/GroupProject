@@ -1,6 +1,8 @@
 package com.repella.groupproject;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,14 +41,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         Log.d("ADP", "onBindViewHolder: " + taskList.get(position).getTask_name());
         TextView nameView = viewHolder.nameTaskView;
         TextView locationView = viewHolder.locationTaskView;
-        nameView.setText("Task Name: " + task.getTask_name());
-        locationView.setText("Location: " + task.getLocation_name());
+        nameView.setText(task.getTask_name());
+        locationView.setText(task.getLocation_name());
 
-        //Log.d("last problem", "onBindViewHolder: " + task.getLocation_id());
         ImageButton delButton = viewHolder.delButton;
         ImageButton modButton = viewHolder.modButton;
-        ImageButton completeButton = viewHolder.completeButton;
-        //TODO DELETE BUTTON HERE
+        final ImageButton completeButton = viewHolder.completeButton;
+
+        //Delete Button
         delButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,13 +57,29 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
                 notifyDataSetChanged();
             }
         });
+
+        //Complete Button
+        completeButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (completeButton.isSelected()){
+                    completeButton.setSelected(false);
+                    completeButton.getBackground().setColorFilter(Color.argb(100, 255, 255, 255), PorterDuff.Mode.SRC_OVER);
+                    //...Handle toggle off
+                } else {
+                    completeButton.setSelected(true);
+                    //...Handled toggle on
+                    completeButton.getBackground().setColorFilter(Color.argb(100, 0, 255, 0), PorterDuff.Mode.SRC_OVER);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return taskList.size();
     }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
