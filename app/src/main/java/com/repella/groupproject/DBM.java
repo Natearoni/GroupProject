@@ -4,16 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.repella.groupproject.data.*;
 import com.repella.groupproject.data.Task;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 //Nathan McKnight
 //Database Manager
@@ -124,7 +120,7 @@ public class DBM extends SQLiteOpenHelper
         for(int j = 0; j < TABLE_NAMES.length; j++) //drop DB's tables.
         {
             sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_NAMES[j]);
-            Log.d(TAG, "OnUpgrade:: Dropping Table: " + TABLE_NAMES[j]);
+            //Log.d(TAG, "OnUpgrade:: Dropping Table: " + TABLE_NAMES[j]);
         }
         onCreate(sqLiteDatabase); //recreate DB's tables.
     }
@@ -202,7 +198,7 @@ public class DBM extends SQLiteOpenHelper
         }
         else
         {
-            Log.d(TAG, "selectUser: User Not Found! " + user_name);
+            //Log.d(TAG, "selectUser: User Not Found! " + user_name);
             return null;
         }
 
@@ -251,7 +247,7 @@ public class DBM extends SQLiteOpenHelper
         }
         else
         {
-            Log.d(TAG, "selectLocation: LOCATION IS NULL " + location_name);
+            //Log.d(TAG, "selectLocation: LOCATION IS NULL " + location_name);
             return null;
         }
     }
@@ -283,12 +279,12 @@ public class DBM extends SQLiteOpenHelper
 
         if(usr == null)
         {
-            Log.d(TAG, "assign: User is null. Returning.");
+            //Log.d(TAG, "assign: User is null. Returning.");
             return;
         }
         if(tsk == null)
         {
-            Log.d(TAG, "assign: Task is null. Returning.");
+            //Log.d(TAG, "assign: Task is null. Returning.");
             return;
         }
 
@@ -310,7 +306,7 @@ public class DBM extends SQLiteOpenHelper
         tskNew.setComplete(c);
         if(tsk == null)
         {
-            Log.d(TAG, "setTaskCompleted: Task is null. Returning.");
+            //Log.d(TAG, "setTaskCompleted: Task is null. Returning.");
             return;
         }
         update(tsk, tskNew);
@@ -492,7 +488,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("task_id", task.getId());
         db.insert(TABLE_NAMES[2], null, cv);
         db.close();
-        Log.d(TAG, "insert::(task) Insert successful.");
+        //Log.d(TAG, "insert::(task) Insert successful.");
     }
 
     public void insert(Location loc) //Untested
@@ -600,7 +596,7 @@ public class DBM extends SQLiteOpenHelper
                 delete(selectPrivilege(targetName));
                 break;
             default:
-                Log.d(TAG, "delete: Could not delete because class name is unknown. Returning.");
+                //Log.d(TAG, "delete: Could not delete because class name is unknown. Returning.");
         }
     }
 

@@ -23,5 +23,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         assertEquals("com.repella.groupproject", appContext.getPackageName());
+
     }
 }
