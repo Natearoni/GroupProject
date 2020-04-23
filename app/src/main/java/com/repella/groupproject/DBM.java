@@ -162,7 +162,7 @@ public class DBM extends SQLiteOpenHelper
         User usr = selectUser(userName);
 
         //retrieves all tasks for the given user by id.
-        String query = "SELECT task_name FROM " + TABLE_NAMES[3] + " INNER JOIN " + TABLE_NAMES[2] + " ON " + TABLE_NAMES[2]+".user_id = " + usr.getId();
+        String query = "SELECT DISTINCT task_name FROM " + TABLE_NAMES[3] + " INNER JOIN " + TABLE_NAMES[2] + " ON " + TABLE_NAMES[2]+".user_id = " + usr.getId();
 
         Cursor cur = db.rawQuery(query, null);
 

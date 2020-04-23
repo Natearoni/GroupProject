@@ -13,7 +13,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
-        android:foreground="@android:drawable/ic_menu_revert"
+        android:focusable="true"
         app:backgroundTint="#B5E6B5"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -30,7 +30,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="8dp"
         android:clickable="true"
-        android:foreground="@android:drawable/ic_input_add"
+        android:focusable="true"
         app:backgroundTint="#B5E6B5"
         app:fabSize="auto"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -39,7 +39,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.988"
-        app:srcCompat="?attr/homeAsUpIndicator" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
