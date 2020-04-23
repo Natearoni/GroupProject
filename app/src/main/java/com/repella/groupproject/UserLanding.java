@@ -35,7 +35,7 @@ public class UserLanding extends AppCompatActivity {
         setContentView(R.layout.activity_user_landing);
         final Intent userLoggedIn = getIntent();
         final Bundle extras = userLoggedIn.getExtras();
-        rvTasks = (RecyclerView) findViewById(R.id.recyclerView);
+        rvTasks = findViewById(R.id.recyclerView);
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
         //rvTasks.setItemAnimator(new DefaultItemAnimator());
 

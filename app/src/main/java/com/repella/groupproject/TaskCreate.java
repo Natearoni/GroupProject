@@ -29,7 +29,7 @@ public class TaskCreate extends AppCompatActivity {
                 EditText task = findViewById(R.id.taskDescription);
                 EditText location = findViewById(R.id.taskLocation);
 
-                MainActivity.dbm.insert(new com.repella.groupproject.data.Task(task.getText().toString(), 0, 1), MainActivity.dbm.selectUser(extras.getString("LOGGED_IN_USER")).getUser_name());
+                MainActivity.dbm.insert(new com.repella.groupproject.data.Task(task.getText().toString(), 0, 1, location.getText().toString()), MainActivity.dbm.selectUser(extras.getString("LOGGED_IN_USER")).getUser_name());
                          Log.d("GREATSUCCESS", "WE DID IT?");
 
                 //Intent i = new Intent(getApplicationContext(), UserLanding.class);

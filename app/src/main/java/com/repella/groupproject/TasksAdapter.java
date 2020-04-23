@@ -39,16 +39,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
         Log.d("ADP", "onBindViewHolder: " + taskList.get(position).getTask_name());
         TextView nameView = viewHolder.nameTaskView;
         TextView locationView = viewHolder.locationTaskView;
-        nameView.setText(task.getTask_name());
-
-
-        Location loc = MainActivity.dbm.selectLocationByTaskLocationId(task.getLocation_id());
-        if(loc == null)
-            Log.d("last problem", "onBindViewHolder: NULL LOC.");
-        locationView.setText(loc.getName()); //last problem.
-        //locationView.setText("DEFAULT_LOC");
-
-
+        nameView.setText("Task Name: " + task.getTask_name());
+        locationView.setText("Location: " + task.getLocation_name());
 
         //Log.d("last problem", "onBindViewHolder: " + task.getLocation_id());
         ImageButton delButton = viewHolder.delButton;

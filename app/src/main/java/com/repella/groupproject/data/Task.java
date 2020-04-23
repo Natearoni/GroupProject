@@ -10,15 +10,17 @@ public class Task
     private String task_name;
     private int complete = 0;
     private int location_id;
+    private String location_name;
 
     //Throws a fit when complete is not 1 or 0.
-    public Task(String name, int complete, int location_id)
+    public Task(String name, int complete, int location_id, String locName)
     {
         task_name = name;
         if(complete == 0 || complete == 1)
             this.complete = complete;
         else this.complete = 0;
         this.location_id = location_id;
+        location_name = locName;
     }
 
     public int getComplete()
@@ -36,6 +38,8 @@ public class Task
     {
         return location_id;
     }
+
+    public String getLocation_name() { return location_name; }
 
     public String getTask_name()
     {

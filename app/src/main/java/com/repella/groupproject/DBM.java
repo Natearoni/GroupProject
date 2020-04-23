@@ -96,6 +96,7 @@ public class DBM extends SQLiteOpenHelper
                 "task_name" + " Text, " +
                 "complete" + " Integer, " +
                 "location_id" + " Integer, " +
+                "location_name" + " Text, " +
                 "FOREIGN KEY(location_id) REFERENCES " + TABLE_NAMES[4] + "(location_id) " +
                 "CHECK(complete == 0 OR complete == 1), " +
                 "UNIQUE(task_name) )";
@@ -213,7 +214,7 @@ public class DBM extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.query(TABLE_NAMES[3],
-                new String[]{"task_id", "task_name", "complete", "location_id"},
+                new String[]{"task_id", "task_name", "complete", "location_id", "location_name"},
                 "task_name = ?",
                 new String[]{String.valueOf(task_name)},
                 null, null, null, null);
@@ -222,7 +223,8 @@ public class DBM extends SQLiteOpenHelper
         {
             com.repella.groupproject.data.Task task = new com.repella.groupproject.data.Task(cur.getString(cur.getColumnIndex("task_name")),
                     cur.getInt(cur.getColumnIndex("complete")),
-                    cur.getInt(cur.getColumnIndex("location_id")));
+                    cur.getInt(cur.getColumnIndex("location_id")),
+                    cur.getString(cur.getColumnIndex("location_name")));
             task.setId(cur.getInt(cur.getColumnIndex("task_id")));
             return task;
         }
@@ -479,6 +481,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("task_name", task.getTask_name());
         cv.put("complete", task.getComplete());
         cv.put("location_id", task.getLocation_id());
+        cv.put("location_name", task.getLocation_name());
         db.insert(TABLE_NAMES[3], null, cv);
         task = selectTask(task.getTask_name()); //select same task so we get an ID
 
@@ -489,7 +492,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("task_id", task.getId());
         db.insert(TABLE_NAMES[2], null, cv);
         db.close();
-        //Log.d(TAG, "insert::(task) Insert successful.");
+        Log.d(TAG, "insert::(task) Insert successful.");
     }
 
     public void insert(Location loc) //Untested

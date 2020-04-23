@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         //dbm.purge(getApplicationContext());
         //Test Cases:
         //make some fake data.
-        dbm.insert(new Location("Benis, Iran", 0, 0, 0));
+        //dbm.insert(new Location("Benis, Iran", 0, 0, 0));
         //dbm.insert(new User("NotADick", "okmaybealittle", 0));
         //dbm.insert(new Task("Go to Bagina, India", 0, 1), "NotADick");
 
