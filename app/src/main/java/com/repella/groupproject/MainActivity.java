@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.repella.groupproject.data.Task;
 import com.repella.groupproject.data.User;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MActivity";
@@ -36,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
             //Only works for one at a time. Comment/Uncomment out as necessary.
             //testInsertAndSelect();
             //testSqlInjection();
-            //injectUserTasks();
-            testUpdate();
+            injectUserTasks();
+            //testUpdate();
         }
         catch(Exception e)
         {
@@ -136,8 +138,11 @@ public class MainActivity extends AppCompatActivity {
         dbm.insert(usr);
         dbm.insert(tsk, usr.getUser_name());
 
+        ArrayList<Task> usrtsks = dbm.selectUserTasks("lumiboi"); //should return a result if the table didn't drop.
         User usr2 = dbm.selectUser("lumiboi"); //should return a result if the table didn't drop.
+
         if(usr2 == null) throw new Exception("injectUserTasks: Test failed.");
+        if(usrtsks.size() != 1) throw new Exception("injectUserTasks: Test failed.");
 
         dbm.delete(usr.getUser_name(), "User"); //cleanup
         dbm.delete(tsk.getTask_name(), "Task");
