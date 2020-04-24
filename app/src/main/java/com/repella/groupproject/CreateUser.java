@@ -2,6 +2,7 @@ package com.repella.groupproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,20 +28,25 @@ public class CreateUser extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(userName.getText().toString().replaceAll(" ", "").isEmpty() || ((userName.getText().toString().length() > 21) && userName.getText().toString().length() < 1)) {
+                if(!isValidUsername(userName.getText().toString())) {
+                    //Log.d("VALIDUSER", "WE DOD NOT WORK IT");
                     Toast.makeText(getApplicationContext(), "Invalid Username", Toast.LENGTH_LONG).show();
-                    finish();
                 }
                 else if(isValidUsername(userName.getText().toString())) {
                     User createUser = new User(userName.getText().toString(), password.getText().toString(), 1);
                     dbm.insert(createUser);
+                    //Log.d("INVALIDUSER", "WE MADE IT THUS FAR!");
                     finish();
                 }
             }
         });
     }
+
     private boolean isValidUsername(String username) {
-        boolean valid = (username != null) && pattern.matcher(username).matches();
-        return valid;
+        if(username.length() < 21 && username.length() > 0) {
+            boolean valid = (username != null) && pattern.matcher(username).matches();
+            return valid;
+        }
+        return false;
     }
 }
