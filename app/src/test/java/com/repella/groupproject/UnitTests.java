@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
     public class UnitTests {
 
     private Pattern pattern = Pattern.compile("[A-Za-z0-9_]+"); //Pattern which identifies nondigit and nonletter characters.
-    private Pattern patternTwo = Pattern.compile("[A-Za-z0-9 ]+");
+    private Pattern patternTwo = Pattern.compile("[A-Za-z0-9 ]+"); //Same as above but allows white spaces (For Tasks Location/descriptions)
     @Test
     public void testCases () {
         assertTrue(isValidUsername("jomama had a big soup tomale bonjourno"));
