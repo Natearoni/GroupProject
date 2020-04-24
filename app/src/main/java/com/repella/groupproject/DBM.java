@@ -4,12 +4,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.repella.groupproject.data.*;
 import com.repella.groupproject.data.Task;
 
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
 
 //Nathan McKnight
 //Database Manager
@@ -488,7 +491,7 @@ public class DBM extends SQLiteOpenHelper
         cv.put("task_id", task.getId());
         db.insert(TABLE_NAMES[2], null, cv);
         db.close();
-        //Log.d(TAG, "insert::(task) Insert successful.");
+        Log.d(TAG, "insert::(task) Insert successful.");
     }
 
     public void insert(Location loc) //Untested
@@ -596,12 +599,13 @@ public class DBM extends SQLiteOpenHelper
                 delete(selectPrivilege(targetName));
                 break;
             default:
-                //Log.d(TAG, "delete: Could not delete because class name is unknown. Returning.");
+                Log.d(TAG, "delete: Could not delete because class name is unknown. Returning.");
         }
     }
 
     private void delete(User user) //Untested
     {
+        if(user == null) return;
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[0], "user_id = ?", new String[]{""+user.getId()});
         db.delete(TABLE_NAMES[2], "user_id = ?", new String[]{""+user.getId()});
@@ -610,6 +614,7 @@ public class DBM extends SQLiteOpenHelper
 
     private void delete(com.repella.groupproject.data.Task task)
     {
+        if(task == null) return;
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[3], "task_id = ?", new String[]{""+task.getId()});
         db.delete(TABLE_NAMES[2], "task_id = ?", new String[]{""+task.getId()});
@@ -618,6 +623,7 @@ public class DBM extends SQLiteOpenHelper
 
     private void delete(Location loc)
     {
+        if(loc == null) return;
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[4], "location_id = ?", new String[]{""+loc.getId()});
         db.close();
@@ -625,6 +631,7 @@ public class DBM extends SQLiteOpenHelper
 
     private void delete(Privilege priv)
     {
+        if(priv == null) return;
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_NAMES[3], "priv_id = ?", new String[]{""+priv.getId()});
         db.close();
